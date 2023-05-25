@@ -1,0 +1,6 @@
+.terraform/**
+.terraform*
+.idea/**
+**/.terraform/**
+terraform.tfstate**
+*.ini
