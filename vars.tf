@@ -339,6 +339,15 @@ variable "ingress_rules" {
       cidr_block  = null
       self        = true
     }
+    "SchemaRegistry" = {
+      description = "schema_registry access for external users"
+      from_port   = 8081
+      to_port     = 8081
+      protocol    = "tcp"
+      enabled     = true
+      cidr_block  = ["0.0.0.0/0"]
+      self        = null
+    }
   }
 }
 
