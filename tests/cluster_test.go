@@ -8,9 +8,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-var AwsSecretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
-var AwsAccessKeyId = os.Getenv("AWS_ACCESS_KEY_ID")
-
 func TestTerraformPlan(t *testing.T) {
 	tests := []struct {
 		Name      string
@@ -33,8 +30,10 @@ func TestTerraformPlan(t *testing.T) {
 				// The path to where our Terraform code is located
 				TerraformDir: fmt.Sprintf("../examples/%s", test.Directory),
 				EnvVars: map[string]string{
-					"AWS_ACCESS_KEY_ID":     AwsAccessKeyId,
-					"AWS_SECRET_ACCESS_KEY": AwsSecretAccessKey,
+					"AWS_ACCESS_KEY_ID":     os.Getenv("AWS_ACCESS_KEY_ID"),
+					"AWS_SECRET_ACCESS_KEY": os.Getenv("AWS_SECRET_ACCESS_KEY"),
+					"AWS_DEFAULT_REGION":    os.Getenv("AWS_DEFAULT_REGION"),
+					"AWS_SESSION_TOKEN":     os.Getenv("AWS_SESSION_TOKEN"),
 				},
 			}
 
