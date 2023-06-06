@@ -60,3 +60,8 @@ output "node_details" {
   description = "Details of the nodes in the deployment."
   value = local.node_details
 }
+
+output "security_group_id" {
+  description = "id of the security group"
+  value = aws_security_group.node_sec_group.id
+}
