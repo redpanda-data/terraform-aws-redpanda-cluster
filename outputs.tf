@@ -24,7 +24,7 @@ resource "random_id" "redpanda" {
 
 output "redpanda_map" {
   value = { for i in range(length(aws_instance.redpanda[*].id)) :
-    lower(random_id.redpanda[i].b64_url) => aws_instance.redpanda[i].public_ip
+    lower(random_id.redpanda[i].b64_url) => aws_instance.redpanda[i].private_ip
   }
   description = "A map of random IDs to public IPs for the Redpanda instances."
 }
