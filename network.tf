@@ -11,7 +11,7 @@ resource "aws_security_group" "node_sec_group" {
       from_port   = ingress.value.from_port
       to_port     = ingress.value.to_port
       protocol    = ingress.value.protocol
-      cidr_blocks = ingress.value.cidr_block
+      cidr_blocks = ingress.value.cidr_blocks
       self        = ingress.value.self
     }
   }
@@ -26,4 +26,14 @@ resource "aws_security_group" "node_sec_group" {
       self        = egress.value.self
     }
   }
+}
+
+resource "aws_route53_record" "private_record" {
+  count = var.create_r53_records ? var.nodes : 0
+
+  zone_id = var.zone_id
+  name    = random_id.redpanda[count.index].b64_url
+  type    = "A"
+  ttl     = "300"
+  records = [aws_instance.redpanda[count.index].private_ip]
 }

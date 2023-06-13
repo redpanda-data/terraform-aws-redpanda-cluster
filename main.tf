@@ -11,8 +11,8 @@ resource "aws_instance" "redpanda" {
   placement_group             = var.ha ? aws_placement_group.redpanda-pg[0].id : null
   placement_partition_number  = var.ha ? (count.index % aws_placement_group.redpanda-pg[0].partition_count) + 1 : null
   availability_zone           = var.availability_zone[count.index % length(var.availability_zone)]
-  vpc_security_group_ids      = concat([aws_security_group.node_sec_group.id], var.security_groups_redpanda)
-  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = coalesce(var.security_groups_redpanda, [aws_security_group.node_sec_group.id])
+  subnet_id                   = var.redpanda_subnet_id
   associate_public_ip_address = var.associate_public_ip_addr
 
   tags = merge(
