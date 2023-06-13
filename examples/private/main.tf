@@ -1,70 +1,9 @@
-resource "aws_vpc" "test" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-
-  tags = var.tags
-}
-
-
-resource "aws_route53_zone" "test" {
-  name = "devextest.local"
-  vpc {
-    vpc_id = aws_vpc.test.id
-  }
-  tags = var.tags
-}
-
-
-resource "aws_subnet" "server" {
-  vpc_id     = aws_vpc.test.id
-  cidr_block = "10.0.1.0/24"
-
-  tags              = var.tags
-  availability_zone = "us-west-2a"
-}
-
-resource "aws_subnet" "client" {
-  vpc_id                  = aws_vpc.test.id
-  cidr_block              = "10.0.2.0/24"
-  map_public_ip_on_launch = true
-
-  tags              = var.tags
-  availability_zone = "us-west-2a"
-}
-
-resource "aws_internet_gateway" "test" {
-  vpc_id = aws_vpc.test.id
-
-  tags = var.tags
-}
-
-resource "aws_route_table" "test" {
-  vpc_id = aws_vpc.test.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.test.id
-  }
-
-  tags = var.tags
-}
-
-resource "aws_route_table_association" "client" {
-  subnet_id      = aws_subnet.client.id
-  route_table_id = aws_route_table.test.id
-}
-
-resource "aws_route_table_association" "server" {
-  subnet_id      = aws_subnet.server.id
-  route_table_id = aws_route_table.test.id
-}
-
 resource "aws_security_group" "client_sec_group" {
   name        = "${var.deployment_prefix}-client-sg"
   description = "client security group"
+  vpc_id      = var.vpc_id
   tags        = var.tags
-  vpc_id      = aws_vpc.test.id
+
   ingress {
     description = "Allow outbound to ssh"
     from_port   = 22
@@ -80,7 +19,6 @@ resource "aws_security_group" "client_sec_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 module "redpanda-cluster" {
   source                          = "../../"
   public_key_path                 = var.public_key_path
@@ -89,35 +27,20 @@ module "redpanda-cluster" {
   enable_monitoring               = var.enable_monitoring
   tiered_storage_enabled          = var.tiered_storage_enabled
   allow_force_destroy             = var.allow_force_destroy
-  vpc_id                          = aws_vpc.test.id
   distro                          = var.distro
   hosts_file                      = var.hosts_file
   tags                            = var.tags
-  create_r53_records              = true
-  associate_public_ip_addr_client = true
-  security_groups_client          = [aws_security_group.client_sec_group.id]
-  prometheus_subnet_id            = aws_subnet.server.id
-  redpanda_subnet_id              = aws_subnet.server.id
-  client_subnet_id                = aws_subnet.client.id
-  zone_id                         = aws_route53_zone.test.id
   clients                         = 1
+  security_groups_client          = [aws_security_group.client_sec_group.id]
+  associate_public_ip_addr        = true
+  associate_public_ip_addr_client = true
   availability_zone               = ["us-west-2a"]
   egress_rules                    = {
     "SSH" = {
-      description     = "Allow oubound to ssh"
+      description     = "Allow outbound to ssh"
       from_port       = 22
       to_port         = 22
       protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = ["0.0.0.0/0"]
-      self            = null
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "PING" = {
-      description     = "Allow ICMP"
-      from_port       = -1
-      to_port         = -1
-      protocol        = "icmp"
       enabled         = true
       cidr_blocks     = ["0.0.0.0/0"]
       self            = null
@@ -131,7 +54,7 @@ module "redpanda-cluster" {
       to_port         = 22
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = [aws_subnet.client.cidr_block]
+      cidr_blocks     = ["0.0.0.0/0"]
       self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
@@ -215,16 +138,6 @@ module "redpanda-cluster" {
       self            = true
       security_groups = [aws_security_group.client_sec_group.id]
     }
-    "PING" = {
-      description     = "Allow ICMP"
-      from_port       = -1
-      to_port         = -1
-      protocol        = "icmp"
-      enabled         = true
-      cidr_blocks     = [aws_subnet.client.cidr_block]
-      self            = null
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
   }
 }
 
@@ -240,7 +153,7 @@ variable "nodes" {
 
 variable "deployment_prefix" {
   type    = string
-  default = "rp-vpc"
+  default = "rp-private"
 }
 
 variable "enable_monitoring" {
@@ -256,6 +169,11 @@ variable "tiered_storage_enabled" {
 variable "allow_force_destroy" {
   type    = bool
   default = false
+}
+variable "vpc_id" {
+  description = "only set when you are planning to provide your own network rather than using the default one"
+  type        = string
+  default     = ""
 }
 
 variable "distro" {

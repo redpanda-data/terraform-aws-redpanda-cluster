@@ -198,28 +198,23 @@ variable "private_key_path" {
   default     = null
 }
 
+## SG overrides for the default security groups
 variable "security_groups_client" {
   type        = list(string)
   description = "Any additional security groups to attach to the client nodes"
-  default     = []
+  default     = null
 }
 
 variable "security_groups_prometheus" {
   type        = list(string)
   description = "Any additional security groups to attach to the prometheus nodes"
-  default     = []
+  default     = null
 }
 
 variable "security_groups_redpanda" {
   type        = list(string)
   description = "Any additional security groups to attach to the Redpanda nodes"
-  default     = []
-}
-
-variable "subnet_id" {
-  type        = string
-  description = "The ID of the subnet where the EC2 instances will be deployed. An empty string will deploy to the default VPC. If provided, it must be in the same VPC as vpc_id"
-  default     = ""
+  default     = null
 }
 
 variable "tags" {
@@ -256,127 +251,175 @@ variable "associate_public_ip_addr" {
 }
 
 variable "ingress_rules" {
-  description = "Map of ingress rules to create"
+  description = "Map of ingress rules to create on the node sec group. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
   type        = map(object({
-    description = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    enabled     = bool
-    cidr_block  = list(string)
-    self        = bool
+    description     = string
+    from_port       = number
+    to_port         = number
+    protocol        = string
+    enabled         = bool
+    cidr_blocks     = list(string)
+    self            = bool
+    security_groups = list(string)
   }))
   default = {
     "SSH" = {
-      description = "Allow inbound to ssh"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow inbound to ssh"
+      from_port       = 22
+      to_port         = 22
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Kafka" = {
-      description = "Allow anywhere inbound to access the Redpanda Kafka endpoint"
-      from_port   = 9092
-      to_port     = 9092
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access the Redpanda Kafka endpoint"
+      from_port       = 9092
+      to_port         = 9092
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "RPC" = {
-      description = "Allow security-group only to access Redpanda RPC endpoint for intra-cluster communication"
-      from_port   = 33145
-      to_port     = 33145
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = null
-      self        = true
+      description     = "Allow security-group only to access Redpanda RPC endpoint for intra-cluster communication"
+      from_port       = 33145
+      to_port         = 33145
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
     "Admin" = {
-      description = "Allow anywhere inbound to access Redpanda Admin endpoint"
-      from_port   = 9644
-      to_port     = 9644
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access Redpanda Admin endpoint"
+      from_port       = 9644
+      to_port         = 9644
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Grafana" = {
-      description = "Allow anywhere inbound to access grafana end point for monitoring"
-      from_port   = 3000
-      to_port     = 3000
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access grafana end point for monitoring"
+      from_port       = 3000
+      to_port         = 3000
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "JavaOMB" = {
-      description = "Allow anywhere inbound to access for Open Messaging Benchmark"
-      from_port   = 8080
-      to_port     = 8080
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access for Open Messaging Benchmark"
+      from_port       = 8080
+      to_port         = 8080
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Prometheus" = {
-      description = "Allow anywhere inbound to access Prometheus end point for monitoring"
-      from_port   = 9090
-      to_port     = 9090
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access Prometheus end point for monitoring"
+      from_port       = 9090
+      to_port         = 9090
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "NodeExporter" = {
-      description = "node_exporter access within the security-group for ansible"
-      from_port   = 9100
-      to_port     = 9100
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = null
-      self        = true
+      description     = "node_exporter access within the security-group for ansible"
+      from_port       = 9100
+      to_port         = 9100
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
     "SchemaRegistry" = {
-      description = "schema_registry access for external users"
-      from_port   = 8081
-      to_port     = 8081
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "schema_registry access for external users"
+      from_port       = 8081
+      to_port         = 8081
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
   }
 }
 
 variable "egress_rules" {
-  description = "Map of egress rules to create"
+  description = "Map of egress rules to create. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
   type        = map(object({
-    description = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    enabled     = bool
-    cidr_blocks = list(string)
-    self        = bool
+    description     = string
+    from_port       = number
+    to_port         = number
+    protocol        = string
+    enabled         = bool
+    cidr_blocks     = list(string)
+    self            = bool
+    security_groups = list(string)
   }))
   default = {
     "InternetAccess" = {
-      description = "Allow all outbound Internet access"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-      enabled     = true
-      self        = null
+      description     = "Allow all outbound Internet access"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      cidr_blocks     = ["0.0.0.0/0"]
+      enabled         = true
+      self            = null
+      security_groups = []
     }
   }
 }
 
 variable "hosts_file" {
-  default = "hosts.ini"
+  default     = "hosts.ini"
   description = "path and name for ansible hosts file generated as output of this module"
-  type = string
+  type        = string
+}
+
+variable "zone_id" {
+  default     = ""
+  description = "zone id you want used for records"
+  type        = string
+}
+
+variable "create_r53_records" {
+  default     = false
+  description = "toggle to create route53 records in the supplied zone id"
+  type        = bool
+}
+
+variable "associate_public_ip_addr_client" {
+  default     = true
+  type        = bool
+  description = "Allows enabling public ips for clients when using a custom VPC rather than the default"
+}
+
+variable "client_subnet_id" {
+  type        = string
+  default     = ""
+  description = "Provides a custom subnet for clients"
+}
+
+variable "prometheus_subnet_id" {
+  default     = ""
+  type        = string
+  description = "Provides a custom subnet for the prometheus node"
+}
+
+variable "redpanda_subnet_id" {
+  type        = string
+  description = "The ID of the subnet where the EC2 instances will be deployed. An empty string will deploy to the default VPC. If provided, it must be in the same VPC as vpc_id"
+  default     = ""
 }

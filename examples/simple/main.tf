@@ -1,7 +1,7 @@
 module "simple-example" {
   source                   = "../../"
   clients                  = 1
-  deployment_prefix        = "redpanda-simple"
+  deployment_prefix        = var.deployment_prefix
   private_key_path         = ".ssh/id_rsa"
   associate_public_ip_addr = true
   tags                     = {
@@ -39,4 +39,9 @@ variable "region" {
 
 provider "aws" {
   region = var.region
+}
+
+variable "deployment_prefix" {
+  type    = string
+  default = "rp-simple"
 }
