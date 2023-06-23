@@ -11,14 +11,16 @@ while [[ "$#" -gt 0 ]]; do
     case $1 in
         --TF_DIR) TF_DIR="$2"; shift ;;
         --PREFIX) PREFIX="$2"; shift ;;
+        --AWS_ACCESS_KEY_ID) AWS_ACCESS_KEY_ID="$2"; shift ;;
+        --AWS_SECRET_ACCESS_KEY) AWS_SECRET_ACCESS_KEY="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
 done
 
 # Check if TF_DIR and PREFIX are set
-if [ -z "$TF_DIR" ] || [ -z "$PREFIX" ]; then
-    echo "TF_DIR and PREFIX must be set. Exiting."
+if [ -z "$TF_DIR" ] || [ -z "$PREFIX" ] || [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "TF_DIR, PREFIX, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY must be set. Exiting."
     exit 1
 fi
 

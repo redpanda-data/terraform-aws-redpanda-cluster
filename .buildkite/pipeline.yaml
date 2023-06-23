@@ -4,7 +4,7 @@ agents:
 steps:
   - label: Terraform Apply and Destroy Private
     key: apply-destroy-private
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/private --PREFIX rp-private
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private --PREFIX rp-private --AWS_ACCESS_KEY_ID $DA_AWS_ACCESS_KEY_ID --AWS_SECRET_ACCESS_KEY $DA_AWS_SECRET_ACCESS_KEY
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest
@@ -15,7 +15,7 @@ steps:
 
   - label: Terraform Apply and Destroy Simple
     key: apply-destroy-simple
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/simple --PREFIX rp-simple
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/simple --PREFIX rp-simple --AWS_ACCESS_KEY_ID $DA_AWS_ACCESS_KEY_ID --AWS_SECRET_ACCESS_KEY $DA_AWS_SECRET_ACCESS_KEY
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest
@@ -26,7 +26,7 @@ steps:
 
   - label: Terraform Apply and Destroy Tiered Storage
     key: apply-destroy-tiered-storage
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/tiered_storage --PREFIX rp-tiered-storage
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/tiered_storage --PREFIX rp-tiered-storage --AWS_ACCESS_KEY_ID $DA_AWS_ACCESS_KEY_ID --AWS_SECRET_ACCESS_KEY $DA_AWS_SECRET_ACCESS_KEY
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest
@@ -37,7 +37,7 @@ steps:
 
   - label: Terraform Apply and Destroy VPC
     key: apply-destroy-vpc
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/vpc --PREFIX rp-vpc
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/vpc --PREFIX rp-vpc --AWS_ACCESS_KEY_ID $DA_AWS_ACCESS_KEY_ID --AWS_SECRET_ACCESS_KEY $DA_AWS_SECRET_ACCESS_KEY
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest
