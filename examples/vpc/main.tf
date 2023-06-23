@@ -239,7 +239,7 @@ variable "nodes" {
 
 variable "deployment_prefix" {
   type    = string
-  default = "test-rp-cluster"
+  default = "rp-vpc"
 }
 
 variable "enable_monitoring" {

@@ -153,7 +153,7 @@ variable "nodes" {
 
 variable "deployment_prefix" {
   type    = string
-  default = "test-rp-cluster"
+  default = "rp-private"
 }
 
 variable "enable_monitoring" {
