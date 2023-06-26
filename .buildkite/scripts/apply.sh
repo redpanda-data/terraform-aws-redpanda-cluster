@@ -34,7 +34,7 @@ cleanup() {
     terraform destroy --auto-approve
     exit $error_code
 }
-
+sleep infinity
 terraform apply -var "deployment_prefix=$PREFIX" --auto-approve
 
 # Trap will handle destroy so just exit
