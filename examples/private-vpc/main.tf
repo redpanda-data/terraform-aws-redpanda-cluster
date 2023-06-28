@@ -6,7 +6,6 @@ resource "aws_vpc" "test" {
   tags = var.tags
 }
 
-
 resource "aws_route53_zone" "test" {
   name = "devextest.local"
   vpc {
@@ -14,7 +13,6 @@ resource "aws_route53_zone" "test" {
   }
   tags = var.tags
 }
-
 
 resource "aws_subnet" "server" {
   vpc_id     = aws_vpc.test.id
@@ -104,7 +102,7 @@ module "redpanda-cluster" {
   availability_zone               = ["us-west-2a"]
   egress_rules                    = {
     "SSH" = {
-      description     = "Allow oubound to ssh"
+      description     = "Allow outbound to ssh"
       from_port       = 22
       to_port         = 22
       protocol        = "tcp"
@@ -136,7 +134,7 @@ module "redpanda-cluster" {
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "Kafka" = {
-      description     = "Allow anywhere inbound to access the Redpanda Kafka endpoint"
+      description     = "Allow inbound to access the Redpanda Kafka endpoint"
       from_port       = 9092
       to_port         = 9092
       protocol        = "tcp"
@@ -176,7 +174,7 @@ module "redpanda-cluster" {
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "JavaOMB" = {
-      description     = "Allow anywhere inbound to access for Open Messaging Benchmark"
+      description     = "Allow inbound to access for Open Messaging Benchmark"
       from_port       = 8080
       to_port         = 8080
       protocol        = "tcp"
@@ -186,7 +184,7 @@ module "redpanda-cluster" {
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "Prometheus" = {
-      description     = "Allow anywhere inbound to access Prometheus end point for monitoring"
+      description     = "Allow inbound to access Prometheus end point for monitoring"
       from_port       = 9090
       to_port         = 9090
       protocol        = "tcp"
@@ -206,7 +204,7 @@ module "redpanda-cluster" {
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "SchemaRegistry" = {
-      description     = "schema_registry access for external users"
+      description     = "schema_registry access"
       from_port       = 8081
       to_port         = 8081
       protocol        = "tcp"

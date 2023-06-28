@@ -46,9 +46,9 @@ steps:
             - DA_AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
-  - label: Terraform Apply and Destroy VPC
-    key: apply-destroy-vpc
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/vpc --PREFIX rp-vpc
+  - label: Terraform Apply and Destroy Private VPC
+    key: apply-destroy-pvt-vpc
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc --PREFIX rp-pvt-vpc
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest

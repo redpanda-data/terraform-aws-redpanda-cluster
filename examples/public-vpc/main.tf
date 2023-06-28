@@ -33,7 +33,6 @@ resource "aws_route_table_association" "test" {
   route_table_id = aws_route_table.test.id
 }
 
-
 module "redpanda-cluster" {
   source                   = "../../"
   public_key_path          = var.public_key_path
