@@ -3,12 +3,20 @@ resource "aws_vpc" "test" {
   tags       = var.tags
 }
 
-resource "aws_subnet" "server" {
+resource "aws_subnet" "server-a" {
   vpc_id     = aws_vpc.test.id
   cidr_block = "10.0.1.0/24"
 
   tags              = var.tags
   availability_zone = "us-west-2a"
+}
+
+resource "aws_subnet" "server-b" {
+  vpc_id     = aws_vpc.test.id
+  cidr_block = "10.0.2.0/24"
+
+  tags              = var.tags
+  availability_zone = "us-west-2b"
 }
 
 resource "aws_internet_gateway" "test" {
@@ -28,26 +36,36 @@ resource "aws_route_table" "test" {
   tags = var.tags
 }
 
-resource "aws_route_table_association" "test" {
-  subnet_id      = aws_subnet.server.id
+resource "aws_route_table_association" "test-a" {
+  subnet_id      = aws_subnet.server-a.id
+  route_table_id = aws_route_table.test.id
+}
+
+resource "aws_route_table_association" "test-b" {
+  subnet_id      = aws_subnet.server-b.id
   route_table_id = aws_route_table.test.id
 }
 
 module "redpanda-cluster" {
-  source                   = "../../"
-  public_key_path          = var.public_key_path
-  nodes                    = var.nodes
-  enable_monitoring        = var.enable_monitoring
-  tiered_storage_enabled   = var.tiered_storage_enabled
-  allow_force_destroy      = var.allow_force_destroy
-  aws_region               = var.region
-  vpc_id                   = aws_vpc.test.id
-  distro                   = var.distro
-  hosts_file               = var.hosts_file
-  tags                     = var.tags
-  availability_zone        = ["us-west-2a"]
+  source                 = "../../"
+  public_key_path        = var.public_key_path
+  broker_count           = var.nodes
+  enable_monitoring      = var.enable_monitoring
+  tiered_storage_enabled = var.tiered_storage_enabled
+  allow_force_destroy    = var.allow_force_destroy
+  aws_region             = var.region
+  vpc_id                 = aws_vpc.test.id
+  distro                 = var.distro
+  hosts_file             = var.hosts_file
+  tags                   = var.tags
+  subnets                = {
+    broker = {
+      "us-west-2a" = aws_subnet.server-a.id
+      "us-west-2b" = aws_subnet.server-b.id
+    }
+  }
+  availability_zone        = ["us-west-2a", "us-west-2b"]
   deployment_prefix        = var.deployment_prefix
-  redpanda_subnet_id       = aws_subnet.server.id
   associate_public_ip_addr = true
 }
 

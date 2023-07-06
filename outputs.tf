@@ -1,24 +1,24 @@
-output "redpanda" {
-  description = "A map of public IPs to private IPs for the Redpanda instances."
+output "broker" {
+  description = "A map of public IPs to private IPs for the Broker instances."
   value       = {
-    for instance in aws_instance.redpanda :
+    for instance in aws_instance.broker :
     instance.public_ip => instance.private_ip...
   }
 }
 
-output "redpanda_id" {
+output "broker_id" {
   description = "A map with instance IDs of the Redpanda instances."
   value       = {
-    for instance in aws_instance.redpanda :
+    for instance in aws_instance.broker :
     "instance_id" => instance.id...
   }
 }
 
-resource "random_id" "redpanda" {
-  count       = length(aws_instance.redpanda[*].id)
+resource "random_id" "broker" {
+  count       = length(aws_instance.broker[*].id)
   byte_length = 5
   keepers     = {
-    instance_id = aws_instance.redpanda[count.index].id
+    instance_id = aws_instance.broker[count.index].id
   }
 }
 

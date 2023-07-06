@@ -31,11 +31,11 @@ resource "aws_security_group" "node_sec_group" {
 }
 
 resource "aws_route53_record" "private_record" {
-  count = var.create_r53_records ? var.nodes : 0
+  count = var.create_r53_records ? var.broker_count : 0
 
   zone_id = var.zone_id
-  name    = random_id.redpanda[count.index].b64_url
+  name    = random_id.broker[count.index].b64_url
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.redpanda[count.index].private_ip]
+  records = [aws_instance.broker[count.index].private_ip]
 }

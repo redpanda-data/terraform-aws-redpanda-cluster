@@ -82,7 +82,7 @@ resource "aws_security_group" "client_sec_group" {
 module "redpanda-cluster" {
   source                          = "../../"
   public_key_path                 = var.public_key_path
-  nodes                           = var.nodes
+  broker_count                    = var.nodes
   deployment_prefix               = var.deployment_prefix
   enable_monitoring               = var.enable_monitoring
   tiered_storage_enabled          = var.tiered_storage_enabled
@@ -94,13 +94,18 @@ module "redpanda-cluster" {
   create_r53_records              = true
   associate_public_ip_addr_client = true
   security_groups_client          = [aws_security_group.client_sec_group.id]
-  prometheus_subnet_id            = aws_subnet.server.id
-  redpanda_subnet_id              = aws_subnet.server.id
-  client_subnet_id                = aws_subnet.client.id
-  zone_id                         = aws_route53_zone.test.id
-  clients                         = 1
-  availability_zone               = ["us-west-2a"]
-  egress_rules                    = {
+  subnets                         = {
+    broker = {
+      "us-west-2a" = aws_subnet.server.id
+    }
+    client = {
+      "us-west-2a" = aws_subnet.client.id
+    }
+  }
+  zone_id           = aws_route53_zone.test.id
+  client_count      = 1
+  availability_zone = ["us-west-2a"]
+  egress_rules      = {
     "SSH" = {
       description     = "Allow outbound to ssh"
       from_port       = 22

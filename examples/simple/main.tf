@@ -1,6 +1,6 @@
 module "simple-example" {
   source                   = "../../"
-  clients                  = 1
+  client_count             = 1
   deployment_prefix        = var.deployment_prefix
   private_key_path         = ".ssh/id_rsa"
   associate_public_ip_addr = true

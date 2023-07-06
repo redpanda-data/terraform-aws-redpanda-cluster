@@ -22,7 +22,7 @@ resource "aws_security_group" "client_sec_group" {
 module "redpanda-cluster" {
   source                          = "../../"
   public_key_path                 = var.public_key_path
-  nodes                           = var.nodes
+  broker_count                    = var.nodes
   deployment_prefix               = var.deployment_prefix
   enable_monitoring               = var.enable_monitoring
   tiered_storage_enabled          = var.tiered_storage_enabled
@@ -30,7 +30,7 @@ module "redpanda-cluster" {
   distro                          = var.distro
   hosts_file                      = var.hosts_file
   tags                            = var.tags
-  clients                         = 1
+  client_count                    = 1
   security_groups_client          = [aws_security_group.client_sec_group.id]
   associate_public_ip_addr        = true
   associate_public_ip_addr_client = true

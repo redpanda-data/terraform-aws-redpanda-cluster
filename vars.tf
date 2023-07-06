@@ -10,8 +10,8 @@ variable "availability_zone" {
   type        = list(string)
 }
 
-variable "clients" {
-  description = "Number of client hosts"
+variable "client_count" {
+  description = "Number of clients to build per AZ. Recommended 1"
   type        = number
   default     = 0
 }
@@ -117,7 +117,7 @@ variable "ha" {
   default     = false
 }
 
-variable "instance_type" {
+variable "broker_instance_type" {
   type        = string
   description = "Default redpanda instance type to create"
   default     = "i3.2xlarge"
@@ -129,8 +129,8 @@ variable "machine_architecture" {
   default     = "x86_64"
 }
 
-variable "nodes" {
-  description = "The number of nodes to deploy"
+variable "broker_count" {
+  description = "The number of brokers to deploy per availability zone"
   type        = number
   default     = "3"
 }
@@ -198,6 +198,12 @@ variable "private_key_path" {
   default     = null
 }
 
+variable "security_groups_broker" {
+  type        = list(string)
+  description = "Any additional security groups to attach to the Redpanda nodes. Also serves as the default for the other instance types"
+  default     = null
+}
+
 ## SG overrides for the default security groups
 variable "security_groups_client" {
   type        = list(string)
@@ -208,12 +214,6 @@ variable "security_groups_client" {
 variable "security_groups_prometheus" {
   type        = list(string)
   description = "Any additional security groups to attach to the prometheus nodes"
-  default     = null
-}
-
-variable "security_groups_redpanda" {
-  type        = list(string)
-  description = "Any additional security groups to attach to the Redpanda nodes"
   default     = null
 }
 
@@ -406,20 +406,38 @@ variable "associate_public_ip_addr_client" {
   description = "Allows enabling public ips for clients when using a custom VPC rather than the default"
 }
 
-variable "client_subnet_id" {
-  type        = string
-  default     = ""
-  description = "Provides a custom subnet for clients"
+variable "subnets" {
+  description = "Map of instance types to AZs to subnet IDs. Broker is the default so if you intend to use the same subnet for broker, client and monitor you can just specify broker. However node counts are also taken into account so even if the maps are merged. If you set for example: client to 0 but have specified broker in 6 subnets you will end up with a client map with 6 entries but 0 built clients"
+  type        = map(map(string))
+  default     = {
+    broker     = {}
+    client     = {}
+    prometheus = {}
+  }
+  #  example multi az
+  # {
+  #    broker = {
+  #      "us-west-2a" = "subnet-123"
+  #      "us-west-2b" = "subnet-234"
+  #      "us-west-2c" = "subnet-345"
+  #    }
+  #    client = {
+  #      "us-west-2b" = "subnet-234"
+  #    }
+  #    monitor = {}
+  #  }
 }
 
-variable "prometheus_subnet_id" {
-  default     = ""
-  type        = string
-  description = "Provides a custom subnet for the prometheus node"
-}
+# merging process displayed here.
+# Note that with this merge when two keys are the same (ex: client and broker both contain us-west-2b)
+# the rightmost element dominates. in other words this means if you specify a subnet in an az for client (or monitor)
+# you will always get that subnet in that az for client after the merge.
+#
 
-variable "redpanda_subnet_id" {
-  type        = string
-  description = "The ID of the subnet where the EC2 instances will be deployed. An empty string will deploy to the default VPC. If provided, it must be in the same VPC as vpc_id"
-  default     = ""
+locals {
+  merged_subnets = {
+    broker  = var.subnets["broker"]
+    client  = try(try(merge(var.subnets["broker"], var.subnets["client"]), var.subnets["broker"]), "")
+    monitor = try(try(merge(var.subnets["broker"], var.subnets["monitor"]), var.subnets["broker"]), "")
+  }
 }
