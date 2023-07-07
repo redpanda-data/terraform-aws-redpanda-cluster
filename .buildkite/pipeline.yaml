@@ -56,3 +56,14 @@ steps:
             - DA_AWS_ACCESS_KEY_ID
             - DA_AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy Private VPC No Zone
+    key: apply-destroy-pvt-vpc-no-zone
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc-no-zone --PREFIX rp-pvt-nzone
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
