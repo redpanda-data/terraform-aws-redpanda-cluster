@@ -10,9 +10,9 @@ locals {
     iam_username : trimprefix(data.aws_arn.caller_arn.resource, "user/")
   }
 
-  merged_tags = merge(local.instance_tags, var.tags)
+  merged_tags  = merge(local.instance_tags, var.tags)
   node_details = [
-    for index, instance in aws_instance.redpanda :
+    for index, instance in aws_instance.broker :
     {
       instance_id : instance.id
       public_ip : instance.public_ip

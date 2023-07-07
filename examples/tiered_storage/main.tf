@@ -1,7 +1,7 @@
 module "tiered-example" {
   source                   = "../../"
-  clients                  = 1
-  deployment_prefix        = "redpanda-tiered"
+  client_count             = 1
+  deployment_prefix        = var.deployment_prefix
   tiered_storage_enabled   = true
   allow_force_destroy      = true
   private_key_path         = ".ssh/id_rsa"
@@ -9,6 +9,11 @@ module "tiered-example" {
   tags                     = {
     "owner" : "tiered-test"
   }
+}
+
+variable "deployment_prefix" {
+  type    = string
+  default = "rp-tiered"
 }
 
 terraform {

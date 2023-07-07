@@ -1,27 +1,22 @@
 resource "aws_vpc" "test" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-
-  tags = var.tags
+  cidr_block = "10.0.0.0/16"
+  tags       = var.tags
 }
 
-
-resource "aws_route53_zone" "test" {
-  name = "devextest.local"
-  vpc {
-    vpc_id = aws_vpc.test.id
-  }
-  tags = var.tags
-}
-
-
-resource "aws_subnet" "test" {
+resource "aws_subnet" "server-a" {
   vpc_id     = aws_vpc.test.id
   cidr_block = "10.0.1.0/24"
 
-  tags = var.tags
+  tags              = var.tags
   availability_zone = "us-west-2a"
+}
+
+resource "aws_subnet" "server-b" {
+  vpc_id     = aws_vpc.test.id
+  cidr_block = "10.0.2.0/24"
+
+  tags              = var.tags
+  availability_zone = "us-west-2b"
 }
 
 resource "aws_internet_gateway" "test" {
@@ -41,36 +36,37 @@ resource "aws_route_table" "test" {
   tags = var.tags
 }
 
-resource "aws_route_table_association" "test" {
-  subnet_id      = aws_subnet.test.id
+resource "aws_route_table_association" "test-a" {
+  subnet_id      = aws_subnet.server-a.id
+  route_table_id = aws_route_table.test.id
+}
+
+resource "aws_route_table_association" "test-b" {
+  subnet_id      = aws_subnet.server-b.id
   route_table_id = aws_route_table.test.id
 }
 
 module "redpanda-cluster" {
-  source                   = "../../"
+  source                 = "../../"
   public_key_path        = var.public_key_path
-  nodes                  = var.nodes
-  deployment_prefix      = var.deployment_prefix
+  broker_count           = var.nodes
   enable_monitoring      = var.enable_monitoring
   tiered_storage_enabled = var.tiered_storage_enabled
   allow_force_destroy    = var.allow_force_destroy
+  aws_region             = var.region
   vpc_id                 = aws_vpc.test.id
   distro                 = var.distro
   hosts_file             = var.hosts_file
   tags                   = var.tags
-  subnet_id = aws_subnet.test.id
-  availability_zone = ["us-west-2a"]
-}
-
-
-resource "aws_route53_record" "private_record" {
-  count = var.nodes
-
-  zone_id = aws_route53_zone.test.zone_id
-  name    = "${element(keys(module.redpanda-cluster.redpanda_map), count.index)}.local"
-  type    = "A"
-  ttl     = "300"
-  records = [element(values(module.redpanda-cluster.redpanda_map), count.index)]
+  subnets                = {
+    broker = {
+      "us-west-2a" = aws_subnet.server-a.id
+      "us-west-2b" = aws_subnet.server-b.id
+    }
+  }
+  availability_zone        = ["us-west-2a", "us-west-2b"]
+  deployment_prefix        = var.deployment_prefix
+  associate_public_ip_addr = true
 }
 
 variable "public_key_path" {
@@ -85,7 +81,7 @@ variable "nodes" {
 
 variable "deployment_prefix" {
   type    = string
-  default = "test-rp-cluster"
+  default = "rp-public-vpc"
 }
 
 variable "enable_monitoring" {
@@ -101,11 +97,6 @@ variable "tiered_storage_enabled" {
 variable "allow_force_destroy" {
   type    = bool
   default = false
-}
-variable "vpc_id" {
-  description = "only set when you are planning to provide your own network rather than using the default one"
-  type        = string
-  default     = ""
 }
 
 variable "distro" {
@@ -153,8 +144,4 @@ variable "region" {
 
 provider "aws" {
   region = var.region
-}
-
-output "test" {
-  value = module.redpanda-cluster.redpanda_map
 }

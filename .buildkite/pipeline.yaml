@@ -1,0 +1,69 @@
+agents:
+  queue: "k8s-builders"
+
+steps:
+  - label: Terraform Apply and Destroy Private
+    key: apply-destroy-private
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private --PREFIX rp-private
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy VPC Public
+    key: apply-destroy-public-vpc
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/public-vpc --PREFIX rp-pub-vpc
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy Simple
+    key: apply-destroy-simple
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/simple --PREFIX rp-simple
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy Tiered Storage
+    key: apply-destroy-tiered-storage
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/tiered_storage --PREFIX rp-tiered-storage
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy Private VPC
+    key: apply-destroy-pvt-vpc
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc --PREFIX rp-pvt-vpc
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
+
+  - label: Terraform Apply and Destroy Private VPC No Zone
+    key: apply-destroy-pvt-vpc-no-zone
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc-no-zone --PREFIX rp-pvt-nzone
+    plugins:
+      - docker#v5.4.0:
+          image: glrp/atgt:latest
+          environment:
+            - DA_AWS_ACCESS_KEY_ID
+            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_DEFAULT_REGION
