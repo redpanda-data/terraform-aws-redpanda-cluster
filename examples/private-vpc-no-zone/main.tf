@@ -71,6 +71,22 @@ resource "aws_security_group" "client_sec_group" {
   }
 }
 
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id          = aws_vpc.test.id
+  service_name    = "com.amazonaws.${var.region}.s3"
+  route_table_ids = [aws_route_table.test.id]
+  policy          = <<POLICY
+{
+  "Statement": [{
+    "Action": "s3:*",
+    "Effect": "Allow",
+    "Resource": "*",
+    "Principal": "*"
+  }]
+}
+POLICY
+}
+
 module "redpanda-cluster" {
   source                          = "../../"
   public_key_path                 = var.public_key_path
@@ -84,6 +100,7 @@ module "redpanda-cluster" {
   hosts_file                      = var.hosts_file
   tags                            = var.tags
   associate_public_ip_addr_client = true
+  prefix_list_ids                 = [aws_vpc_endpoint.s3_endpoint.prefix_list_id]
   security_groups_client          = [aws_security_group.client_sec_group.id]
   subnets                         = {
     broker = {

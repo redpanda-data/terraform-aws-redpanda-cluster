@@ -323,6 +323,16 @@ variable "ingress_rules" {
       self            = null
       security_groups = []
     }
+    "PandaProxy" = {
+      description     = "Allow anywhere inbound to access for Panda Proxy"
+      from_port       = 8082
+      to_port         = 8082
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
     "Prometheus" = {
       description     = "Allow anywhere inbound to access Prometheus end point for monitoring"
       from_port       = 9090
@@ -440,4 +450,10 @@ locals {
     client  = try(try(merge(var.subnets["broker"], var.subnets["client"]), var.subnets["broker"]), "")
     monitor = try(try(merge(var.subnets["broker"], var.subnets["monitor"]), var.subnets["broker"]), "")
   }
+}
+
+variable "prefix_list_ids" {
+  description = "a list of vpc endpoints (ex s3) that instances should have access to"
+  default     = []
+  type        = list(string)
 }

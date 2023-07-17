@@ -58,6 +58,22 @@ resource "aws_route_table_association" "server" {
   route_table_id = aws_route_table.test.id
 }
 
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id          = aws_vpc.test.id
+  service_name    = "com.amazonaws.${var.region}.s3"
+  route_table_ids = [aws_route_table.test.id]
+  policy          = <<POLICY
+{
+  "Statement": [{
+    "Action": "s3:*",
+    "Effect": "Allow",
+    "Resource": "*",
+    "Principal": "*"
+  }]
+}
+POLICY
+}
+
 resource "aws_security_group" "client_sec_group" {
   name        = "${var.deployment_prefix}-client-sg"
   description = "client security group"
@@ -93,6 +109,7 @@ module "redpanda-cluster" {
   tags                            = var.tags
   create_r53_records              = true
   associate_public_ip_addr_client = true
+  prefix_list_ids                 = [aws_vpc_endpoint.s3_endpoint.prefix_list_id]
   security_groups_client          = [aws_security_group.client_sec_group.id]
   subnets                         = {
     broker = {
