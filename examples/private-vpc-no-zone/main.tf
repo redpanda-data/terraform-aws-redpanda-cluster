@@ -96,28 +96,58 @@ module "redpanda-cluster" {
   client_count      = 1
   availability_zone = ["us-west-2a"]
   egress_rules      = {
-    "SSH" = {
-      description     = "Allow outbound to ssh"
-      from_port       = 22
-      to_port         = 22
+    "PROXY" = {
+      description     = "Allow Proxy"
+      from_port       = 3128
+      to_port         = 3128
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = ["0.0.0.0/0"]
+      cidr_blocks     = [aws_subnet.client.cidr_block]
       self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
-    "PING" = {
-      description     = "Allow ICMP"
-      from_port       = -1
-      to_port         = -1
-      protocol        = "icmp"
+    "INTERNAL" = {
+      description     = "Allow intra group traffic"
+      from_port       = 0
+      to_port         = 0
+      protocol        = -1
       enabled         = true
-      cidr_blocks     = ["0.0.0.0/0"]
-      self            = null
-      security_groups = [aws_security_group.client_sec_group.id]
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
   }
   ingress_rules = {
+    "PROXY" = {
+      description     = "Allow Proxy"
+      from_port       = 3128
+      to_port         = 3128
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
+      security_groups = [aws_security_group.client_sec_group.id]
+    }
+    "HTTP" = {
+      description     = "Allow inbound to 80"
+      from_port       = 80
+      to_port         = 80
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
+      security_groups = [aws_security_group.client_sec_group.id]
+    }
+    "HTTPS" = {
+      description     = "Allow inbound to 443"
+      from_port       = 443
+      to_port         = 443
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
+      security_groups = [aws_security_group.client_sec_group.id]
+    }
     "SSH" = {
       description     = "Allow inbound to ssh"
       from_port       = 22
@@ -134,8 +164,8 @@ module "redpanda-cluster" {
       to_port         = 9092
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "RPC" = {
@@ -144,8 +174,8 @@ module "redpanda-cluster" {
       to_port         = 33145
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "Admin" = {
@@ -154,8 +184,8 @@ module "redpanda-cluster" {
       to_port         = 9644
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "Grafana" = {
@@ -164,8 +194,8 @@ module "redpanda-cluster" {
       to_port         = 3000
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "JavaOMB" = {
@@ -174,8 +204,8 @@ module "redpanda-cluster" {
       to_port         = 8080
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "Prometheus" = {
@@ -184,8 +214,8 @@ module "redpanda-cluster" {
       to_port         = 9090
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "NodeExporter" = {
@@ -194,8 +224,8 @@ module "redpanda-cluster" {
       to_port         = 9100
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "SchemaRegistry" = {
@@ -204,8 +234,8 @@ module "redpanda-cluster" {
       to_port         = 8081
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = [aws_subnet.client.cidr_block]
+      self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
     "PING" = {
@@ -217,6 +247,16 @@ module "redpanda-cluster" {
       cidr_blocks     = [aws_subnet.client.cidr_block]
       self            = null
       security_groups = [aws_security_group.client_sec_group.id]
+    }
+    "INTERNAL" = {
+      description     = "Allow intra group traffic"
+      from_port       = 0
+      to_port         = 0
+      protocol        = -1
+      enabled         = true
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
   }
 }

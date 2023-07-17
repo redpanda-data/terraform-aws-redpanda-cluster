@@ -19,6 +19,7 @@ resource "aws_security_group" "client_sec_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 module "redpanda-cluster" {
   source                          = "../../"
   public_key_path                 = var.public_key_path
@@ -58,85 +59,15 @@ module "redpanda-cluster" {
       self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
-    "Kafka" = {
-      description     = "Allow inbound to access the Redpanda Kafka endpoint"
-      from_port       = 9092
-      to_port         = 9092
-      protocol        = "tcp"
+    "INTERNAL" = {
+      description     = "Allow intra group traffic"
+      from_port       = 0
+      to_port         = 0
+      protocol        = -1
       enabled         = true
       cidr_blocks     = null
       self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "RPC" = {
-      description     = "Allow security-group only to access Redpanda RPC endpoint for intra-cluster communication"
-      from_port       = 33145
-      to_port         = 33145
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "Admin" = {
-      description     = "Allow inbound to access Redpanda Admin endpoint"
-      from_port       = 9644
-      to_port         = 9644
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "Grafana" = {
-      description     = "Allow inbound to access grafana end point for monitoring"
-      from_port       = 3000
-      to_port         = 3000
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "JavaOMB" = {
-      description     = "Allow inbound to access for Open Messaging Benchmark"
-      from_port       = 8080
-      to_port         = 8080
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "Prometheus" = {
-      description     = "Allow inbound to access Prometheus end point for monitoring"
-      from_port       = 9090
-      to_port         = 9090
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "NodeExporter" = {
-      description     = "node_exporter access within the security-group for ansible"
-      from_port       = 9100
-      to_port         = 9100
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
-    }
-    "SchemaRegistry" = {
-      description     = "schema_registry access for external users"
-      from_port       = 8081
-      to_port         = 8081
-      protocol        = "tcp"
-      enabled         = true
-      cidr_blocks     = null
-      self            = true
-      security_groups = [aws_security_group.client_sec_group.id]
+      security_groups = []
     }
   }
 }
