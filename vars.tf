@@ -10,8 +10,8 @@ variable "availability_zone" {
   type        = list(string)
 }
 
-variable "clients" {
-  description = "Number of client hosts"
+variable "client_count" {
+  description = "Number of clients to build per AZ. Recommended 1"
   type        = number
   default     = 0
 }
@@ -117,7 +117,7 @@ variable "ha" {
   default     = false
 }
 
-variable "instance_type" {
+variable "broker_instance_type" {
   type        = string
   description = "Default redpanda instance type to create"
   default     = "i3.2xlarge"
@@ -129,8 +129,8 @@ variable "machine_architecture" {
   default     = "x86_64"
 }
 
-variable "nodes" {
-  description = "The number of nodes to deploy"
+variable "broker_count" {
+  description = "The number of brokers to deploy per availability zone"
   type        = number
   default     = "3"
 }
@@ -198,28 +198,23 @@ variable "private_key_path" {
   default     = null
 }
 
+variable "security_groups_broker" {
+  type        = list(string)
+  description = "Any additional security groups to attach to the Redpanda nodes. Also serves as the default for the other instance types"
+  default     = null
+}
+
+## SG overrides for the default security groups
 variable "security_groups_client" {
   type        = list(string)
   description = "Any additional security groups to attach to the client nodes"
-  default     = []
+  default     = null
 }
 
 variable "security_groups_prometheus" {
   type        = list(string)
   description = "Any additional security groups to attach to the prometheus nodes"
-  default     = []
-}
-
-variable "security_groups_redpanda" {
-  type        = list(string)
-  description = "Any additional security groups to attach to the Redpanda nodes"
-  default     = []
-}
-
-variable "subnet_id" {
-  type        = string
-  description = "The ID of the subnet where the EC2 instances will be deployed. An empty string will deploy to the default VPC. If provided, it must be in the same VPC as vpc_id"
-  default     = ""
+  default     = null
 }
 
 variable "tags" {
@@ -256,127 +251,209 @@ variable "associate_public_ip_addr" {
 }
 
 variable "ingress_rules" {
-  description = "Map of ingress rules to create"
+  description = "Map of ingress rules to create on the node sec group. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
   type        = map(object({
-    description = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    enabled     = bool
-    cidr_block  = list(string)
-    self        = bool
+    description     = string
+    from_port       = number
+    to_port         = number
+    protocol        = string
+    enabled         = bool
+    cidr_blocks     = list(string)
+    self            = bool
+    security_groups = list(string)
   }))
   default = {
     "SSH" = {
-      description = "Allow inbound to ssh"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow inbound to ssh"
+      from_port       = 22
+      to_port         = 22
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Kafka" = {
-      description = "Allow anywhere inbound to access the Redpanda Kafka endpoint"
-      from_port   = 9092
-      to_port     = 9092
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access the Redpanda Kafka endpoint"
+      from_port       = 9092
+      to_port         = 9092
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "RPC" = {
-      description = "Allow security-group only to access Redpanda RPC endpoint for intra-cluster communication"
-      from_port   = 33145
-      to_port     = 33145
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = null
-      self        = true
+      description     = "Allow security-group only to access Redpanda RPC endpoint for intra-cluster communication"
+      from_port       = 33145
+      to_port         = 33145
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
     "Admin" = {
-      description = "Allow anywhere inbound to access Redpanda Admin endpoint"
-      from_port   = 9644
-      to_port     = 9644
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access Redpanda Admin endpoint"
+      from_port       = 9644
+      to_port         = 9644
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Grafana" = {
-      description = "Allow anywhere inbound to access grafana end point for monitoring"
-      from_port   = 3000
-      to_port     = 3000
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access grafana end point for monitoring"
+      from_port       = 3000
+      to_port         = 3000
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "JavaOMB" = {
-      description = "Allow anywhere inbound to access for Open Messaging Benchmark"
-      from_port   = 8080
-      to_port     = 8080
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access for Open Messaging Benchmark"
+      from_port       = 8080
+      to_port         = 8080
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
+    "PandaProxy" = {
+      description     = "Allow anywhere inbound to access for Panda Proxy"
+      from_port       = 8082
+      to_port         = 8082
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "Prometheus" = {
-      description = "Allow anywhere inbound to access Prometheus end point for monitoring"
-      from_port   = 9090
-      to_port     = 9090
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "Allow anywhere inbound to access Prometheus end point for monitoring"
+      from_port       = 9090
+      to_port         = 9090
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
     "NodeExporter" = {
-      description = "node_exporter access within the security-group for ansible"
-      from_port   = 9100
-      to_port     = 9100
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = null
-      self        = true
+      description     = "node_exporter access within the security-group for ansible"
+      from_port       = 9100
+      to_port         = 9100
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = null
+      self            = true
+      security_groups = []
     }
     "SchemaRegistry" = {
-      description = "schema_registry access for external users"
-      from_port   = 8081
-      to_port     = 8081
-      protocol    = "tcp"
-      enabled     = true
-      cidr_block  = ["0.0.0.0/0"]
-      self        = null
+      description     = "schema_registry access for external users"
+      from_port       = 8081
+      to_port         = 8081
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
     }
   }
 }
 
 variable "egress_rules" {
-  description = "Map of egress rules to create"
+  description = "Map of egress rules to create. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
   type        = map(object({
-    description = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    enabled     = bool
-    cidr_blocks = list(string)
-    self        = bool
+    description     = string
+    from_port       = number
+    to_port         = number
+    protocol        = string
+    enabled         = bool
+    cidr_blocks     = list(string)
+    self            = bool
+    security_groups = list(string)
   }))
   default = {
     "InternetAccess" = {
-      description = "Allow all outbound Internet access"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-      enabled     = true
-      self        = null
+      description     = "Allow all outbound Internet access"
+      from_port       = 0
+      to_port         = 0
+      protocol        = "-1"
+      cidr_blocks     = ["0.0.0.0/0"]
+      enabled         = true
+      self            = null
+      security_groups = []
     }
   }
 }
 
 variable "hosts_file" {
-  default = "hosts.ini"
+  default     = "hosts.ini"
   description = "path and name for ansible hosts file generated as output of this module"
-  type = string
+  type        = string
+}
+
+variable "zone_id" {
+  default     = ""
+  description = "zone id you want used for records"
+  type        = string
+}
+
+variable "create_r53_records" {
+  default     = false
+  description = "toggle to create route53 records in the supplied zone id"
+  type        = bool
+}
+
+variable "associate_public_ip_addr_client" {
+  default     = true
+  type        = bool
+  description = "Allows enabling public ips for clients when using a custom VPC rather than the default"
+}
+
+variable "subnets" {
+  description = "Map of instance types to AZs to subnet IDs. Broker is the default so if you intend to use the same subnet for broker, client and monitor you can just specify broker. However node counts are also taken into account so even if the maps are merged. If you set for example: client to 0 but have specified broker in 6 subnets you will end up with a client map with 6 entries but 0 built clients"
+  type        = map(map(string))
+  default     = {
+    broker     = {}
+    client     = {}
+    prometheus = {}
+  }
+  #  example multi az
+  # {
+  #    broker = {
+  #      "us-west-2a" = "subnet-123"
+  #      "us-west-2b" = "subnet-234"
+  #      "us-west-2c" = "subnet-345"
+  #    }
+  #    client = {
+  #      "us-west-2b" = "subnet-234"
+  #    }
+  #    monitor = {}
+  #  }
+}
+
+# merging process displayed here.
+# Note that with this merge when two keys are the same (ex: client and broker both contain us-west-2b)
+# the rightmost element dominates. in other words this means if you specify a subnet in an az for client (or monitor)
+# you will always get that subnet in that az for client after the merge.
+#
+
+locals {
+  merged_subnets = {
+    broker  = var.subnets["broker"]
+    client  = try(try(merge(var.subnets["broker"], var.subnets["client"]), var.subnets["broker"]), "")
+    monitor = try(try(merge(var.subnets["broker"], var.subnets["monitor"]), var.subnets["broker"]), "")
+  }
+}
+
+variable "prefix_list_ids" {
+  description = "a list of vpc endpoints (ex s3) that instances should have access to"
+  default     = []
+  type        = list(string)
 }

@@ -1,10 +1,10 @@
 resource "aws_instance" "prometheus" {
-  count                       = var.enable_monitoring ? 1 : 0
+  count                       = var.enable_monitoring ? 1 * length(var.availability_zone) : 0
   ami                         = coalesce(var.prometheus_ami, data.aws_ami.ami.image_id)
   instance_type               = var.prometheus_instance_type
   key_name                    = aws_key_pair.ssh.key_name
-  subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = concat([aws_security_group.node_sec_group.id], var.security_groups_prometheus)
+  subnet_id                   = try(lookup(local.merged_subnets["monitor"], var.availability_zone[count.index % length(var.availability_zone)]), "")
+  vpc_security_group_ids      = coalesce(var.security_groups_prometheus, [aws_security_group.node_sec_group.id])
   associate_public_ip_address = var.associate_public_ip_addr
 
   tags = merge(
