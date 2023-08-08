@@ -36,7 +36,7 @@ resource "aws_instance" "broker" {
 
 resource "aws_ebs_volume" "ebs_volume" {
   count             = var.broker_count * var.ec2_ebs_volume_count
-  availability_zone = aws_instance.broker[*].availability_zone[count.index]
+  availability_zone = aws_instance.broker[count.index % var.broker_count].availability_zone
   size              = var.ec2_ebs_volume_size
   type              = var.ec2_ebs_volume_type
   iops              = var.ec2_ebs_volume_iops
@@ -45,9 +45,9 @@ resource "aws_ebs_volume" "ebs_volume" {
 
 resource "aws_volume_attachment" "volume_attachment" {
   count       = var.broker_count * var.ec2_ebs_volume_count
-  volume_id   = aws_ebs_volume.ebs_volume[*].id[count.index]
-  device_name = var.ec2_ebs_device_names[count.index]
-  instance_id = aws_instance.broker[*].id[count.index]
+  volume_id   = aws_ebs_volume.ebs_volume[count.index % var.broker_count].id
+  device_name = var.ec2_ebs_device_names[count.index % var.broker_count]
+  instance_id = aws_instance.broker[count.index].id
 }
 
 resource "aws_key_pair" "ssh" {
