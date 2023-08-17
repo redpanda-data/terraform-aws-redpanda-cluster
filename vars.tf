@@ -349,8 +349,8 @@ variable "ingress_rules" {
       to_port         = 9100
       protocol        = "tcp"
       enabled         = true
-      cidr_blocks     = null
-      self            = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
       security_groups = []
     }
     "SchemaRegistry" = {
