@@ -16,6 +16,7 @@ data "aws_ami" "ami" {
       "ubuntu/images/hvm-ssd/ubuntu-*-amd64-server-*",
       "ubuntu/images/hvm-ssd/ubuntu-*-arm64-server-*",
       "Fedora-Cloud-Base-*.x86_64-hvm-us-west-2-gp2-0",
+      "Fedora-Cloud-Base-*.aarch64-hvm-us-west-2-gp2-0",
       "debian-*-amd64-*",
       "debian-*-hvm-x86_64-gp2-*'",
       "amzn2-ami-hvm-2.0.*-x86_64-gp2",

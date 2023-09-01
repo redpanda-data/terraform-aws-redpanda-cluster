@@ -173,7 +173,7 @@ variable "distro_ssh_user" {
     "debian-11"            = "admin"
     "Fedora-Cloud-Base-34" = "fedora"
     "Fedora-Cloud-Base-35" = "fedora"
-    #"Fedora-Cloud-Base-36" = "fedora"
+    "Fedora-Cloud-Base-36" = "fedora"
     #"Fedora-Cloud-Base-37" = "fedora"
     "ubuntu-bionic"        = "ubuntu"
     "ubuntu-focal"         = "ubuntu"
