@@ -363,6 +363,26 @@ variable "ingress_rules" {
       self            = null
       security_groups = []
     }
+    "ConsoleHTTP" = {
+      description     = "console acccess for external users"
+      from_port       = 80
+      to_port         = 80
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
+    "ConsoleHTTPS" = {
+      description     = "console acccess for external users"
+      from_port       = 443
+      to_port         = 443
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
   }
 }
 
