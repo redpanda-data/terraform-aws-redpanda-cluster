@@ -200,20 +200,20 @@ variable "private_key_path" {
 
 variable "security_groups_broker" {
   type        = list(string)
-  description = "Any additional security groups to attach to the Redpanda nodes. Also serves as the default for the other instance types"
+  description = "Overrides the default SG we create with one or more provided SGs to attach to broker nodes. Also serves as the default for the other instance types"
   default     = null
 }
 
 ## SG overrides for the default security groups
 variable "security_groups_client" {
   type        = list(string)
-  description = "Any additional security groups to attach to the client nodes"
+  description = "Overrides the default SG we create with one or more provided SGs to attach to client nodes"
   default     = null
 }
 
 variable "security_groups_prometheus" {
   type        = list(string)
-  description = "Any additional security groups to attach to the prometheus nodes"
+  description = "Overrides the default SG we create with one or more provided SGs to attach to Prometheus nodes"
   default     = null
 }
 
