@@ -10,28 +10,10 @@ variable "availability_zone" {
   type        = list(string)
 }
 
-variable "client_count" {
-  description = "Number of clients to build per AZ. Recommended 1"
-  type        = number
-  default     = 0
-}
-
 variable "client_distro" {
   type        = string
   description = "Linux distribution to use for clients."
   default     = "ubuntu-focal"
-}
-
-variable "client_instance_type" {
-  type        = string
-  description = "Default client instance type to create"
-  default     = "m5n.2xlarge"
-}
-
-variable "deployment_prefix" {
-  description = "The prefix for the instance name (defaults to {random uuid}-{timestamp})"
-  type        = string
-  default     = ""
 }
 
 variable "distro" {
@@ -40,10 +22,22 @@ variable "distro" {
   default     = "ubuntu-focal"
 }
 
+variable "deployment_prefix" {
+  description = "The prefix for the instance name (defaults to {random uuid}-{timestamp})"
+  type        = string
+  default     = ""
+}
+
 variable "enable_monitoring" {
   description = "Setup a prometheus/grafana instance"
   type        = bool
   default     = true
+}
+
+variable "enable_connect" {
+  description = "Allow creation of Kafka Connect instances for a Kafka Connect cluster"
+  type        = bool
+  default     = false
 }
 
 ## It is important that device names do not get duplicated on hosts, in rare circumstances the choice of nodes * volumes can result in a factor that causes duplication. Modify this field so there is not a common factor.
@@ -117,22 +111,16 @@ variable "ha" {
   default     = false
 }
 
-variable "broker_instance_type" {
-  type        = string
-  description = "Default redpanda instance type to create"
-  default     = "i3.2xlarge"
-}
-
 variable "machine_architecture" {
   type        = string
   description = "Architecture used for selecting the AMI - change this if using ARM based instances"
   default     = "x86_64"
 }
 
-variable "broker_count" {
-  description = "The number of brokers to deploy per availability zone"
-  type        = number
-  default     = "3"
+variable "broker_instance_type" {
+  type        = string
+  description = "Default redpanda instance type to create"
+  default     = "i3.2xlarge"
 }
 
 variable "prometheus_instance_type" {
@@ -141,21 +129,57 @@ variable "prometheus_instance_type" {
   default     = "c5.2xlarge"
 }
 
+variable "client_instance_type" {
+  type        = string
+  description = "Default client instance type to create"
+  default     = "m5n.2xlarge"
+}
+
+variable "connect_instance_type" {
+  type        = string
+  description = "Default connect instance type to create"
+  default     = "i3.2xlarge"
+}
+
+variable "client_count" {
+  description = "Number of clients to build per AZ. Recommended 1"
+  type        = number
+  default     = 0
+}
+
+variable "broker_count" {
+  description = "The number of brokers to deploy per availability zone"
+  type        = number
+  default     = "3"
+}
+
+variable "connect_count" {
+  description = "The number of connect nodes to deploy per availability zone"
+  type        = number
+  default     = "1"
+}
+
 variable "cluster_ami" {
   type        = string
-  description = "AMI for Redpanda broker nodes (if not set, will select based on the distro variable"
+  description = "AMI for Redpanda broker nodes (if not set, will select based on the distro variable)"
   default     = null
 }
 
 variable "prometheus_ami" {
   type        = string
-  description = "AMI for prometheus nodes (if not set, will select based on the distro variable"
+  description = "AMI for prometheus nodes (if not set, will select based on the distro variable)"
   default     = null
 }
 
 variable "client_ami" {
   type        = string
-  description = "AMI for Redpanda client nodes (if not set, will select based on the distro variable"
+  description = "AMI for Redpanda client nodes (if not set, will select based on the distro variable)"
+  default     = null
+}
+
+variable "connect_ami" {
+  type        = string
+  description = "AMI for Redpanda connect nodes (if not set, will select based on the distro variable)"
   default     = null
 }
 
@@ -217,6 +241,12 @@ variable "security_groups_prometheus" {
   default     = null
 }
 
+variable "security_groups_connect" {
+  type        = list(string)
+  description = "Overrides the default SG we create with one or more provided SGs to attach to Connect nodes"
+  default     = null
+}
+
 variable "tags" {
   type        = map(string)
   description = "A map of key value pairs passed through to AWS tags on resources"
@@ -228,12 +258,6 @@ variable "vpc_id" {
   type        = string
   description = "The ID of the VPC to deploy the instances. If an ID is an empty string, the default VPC is used. If provided, the subnet_id must also be provided."
   default     = ""
-}
-
-variable "cloud_provider" {
-  type        = string
-  description = "the short, lower case form of the cloud provider"
-  default     = "aws"
 }
 
 # allow_force_destroy is only intended for demos and CI testing and to support decommissioning a cluster entirely
@@ -443,6 +467,7 @@ variable "subnets" {
     broker     = {}
     client     = {}
     prometheus = {}
+    connect    = {}
   }
   #  example multi az
   # {
@@ -455,6 +480,7 @@ variable "subnets" {
   #      "us-west-2b" = "subnet-234"
   #    }
   #    monitor = {}
+  #    connect = {}
   #  }
 }
 
@@ -469,6 +495,7 @@ locals {
     broker  = var.subnets["broker"]
     client  = try(try(merge(var.subnets["broker"], var.subnets["client"]), var.subnets["broker"]), "")
     monitor = try(try(merge(var.subnets["broker"], var.subnets["monitor"]), var.subnets["broker"]), "")
+    connect = try(try(merge(var.subnets["broker"], var.subnets["connect"]), var.subnets["broker"]), "")
   }
 }
 
