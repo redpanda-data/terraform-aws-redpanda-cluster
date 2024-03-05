@@ -80,7 +80,7 @@ steps:
             - AWS_DEFAULT_REGION
   - label: Terraform Apply and Destroy Private VPC Connect
     key: apply-destroy-pvt-vpc-connect
-    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc-connect --PREFIX rp-pvt-cnct
+    command: .buildkite/scripts/apply.sh --TF_DIR examples/private-with-connect --PREFIX rp-pvt-cnct
     plugins:
       - docker#v5.4.0:
           image: glrp/atgt:latest
