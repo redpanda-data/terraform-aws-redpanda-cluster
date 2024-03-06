@@ -14,3 +14,10 @@ ${ monitor_public_ip != "" ? monitor_public_ip : monitor_private_ip } ansible_us
 ${ ip != "" ? ip : client_private_ips[i] } ansible_user=${ ssh_user } ansible_become=True private_ip=${client_private_ips[i]} id=${i}
 %{ endfor ~}
 %{ endif }
+
+%{ if length(connect_public_ips) > 0 }
+[connect]
+%{ for i, ip in connect_public_ips ~}
+${ ip != "" ? ip : connect_private_ips[i] } ansible_user=${ ssh_user } ansible_become=True private_ip=${connect_private_ips[i]} id=${i}
+%{ endfor ~}
+%{ endif }

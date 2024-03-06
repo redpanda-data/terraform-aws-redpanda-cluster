@@ -46,6 +46,30 @@ output "prometheus_id" {
   }
 }
 
+output "connect" {
+  description = "A map of public IPs to private IPs for the Connect instances."
+  value       = {
+    for instance in aws_instance.connect :
+    instance.public_ip => instance.private_ip...
+  }
+}
+
+output "connect_id" {
+  description = "A map with instance IDs of the Connect instances."
+  value       = {
+    for instance in aws_instance.connect :
+    "instance_id" => instance.id...
+  }
+}
+
+resource "random_id" "connect" {
+  count       = length(aws_instance.connect[*].id)
+  byte_length = 5
+  keepers     = {
+    instance_id = aws_instance.connect[count.index].id
+  }
+}
+
 output "client" {
   description = "A map of public IPs to private IPs for the client instances."
   value       = {
