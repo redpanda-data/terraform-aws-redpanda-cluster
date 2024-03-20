@@ -357,6 +357,16 @@ variable "ingress_rules" {
       self            = null
       security_groups = []
     }
+    "Connect" = {
+      description     = "Allow anywhere inbound to access for Kafka Connect"
+      from_port       = 8083
+      to_port         = 8083
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
     "Prometheus" = {
       description     = "Allow anywhere inbound to access Prometheus end point for monitoring"
       from_port       = 9090
