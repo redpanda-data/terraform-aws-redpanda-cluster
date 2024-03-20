@@ -265,6 +265,16 @@ module "redpanda-cluster" {
       self            = null
       security_groups = [aws_security_group.client_sec_group.id]
     }
+    "Connect" = {
+      description     = "Allow anywhere inbound to access for Kafka Connect"
+      from_port       = 8083
+      to_port         = 8083
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
     "PING" = {
       description     = "Allow ICMP"
       from_port       = -1
