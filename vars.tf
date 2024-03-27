@@ -417,6 +417,16 @@ variable "ingress_rules" {
       self            = null
       security_groups = []
     }
+    "JMXExporter" = {
+      description     = "Allow anywhere inbound to access the Redpanda Kafka Connect Prometheus endpoint"
+      from_port       = 9094
+      to_port         = 9094
+      protocol        = "tcp"
+      enabled         = true
+      cidr_blocks     = ["0.0.0.0/0"]
+      self            = null
+      security_groups = []
+    }
   }
 }
 
