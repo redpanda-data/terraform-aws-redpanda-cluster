@@ -6,6 +6,10 @@ steps:
     key: apply-destroy-private
     command: .buildkite/scripts/apply.sh --TF_DIR examples/private --PREFIX rp-private
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -17,6 +21,10 @@ steps:
     key: apply-destroy-public-vpc
     command: .buildkite/scripts/apply.sh --TF_DIR examples/public-vpc --PREFIX rp-pub-vpc
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -28,6 +36,10 @@ steps:
     key: apply-destroy-public-vpc-is4
     command: .buildkite/scripts/apply.sh --TF_DIR examples/public-vpc-is4 --PREFIX rp-pub-vpc-is4
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -39,6 +51,10 @@ steps:
     key: apply-destroy-simple
     command: .buildkite/scripts/apply.sh --TF_DIR examples/simple --PREFIX rp-simple
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -50,6 +66,10 @@ steps:
     key: apply-destroy-tiered-storage
     command: .buildkite/scripts/apply.sh --TF_DIR examples/tiered_storage --PREFIX rp-tiered-storage
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -61,6 +81,10 @@ steps:
     key: apply-destroy-pvt-vpc
     command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc --PREFIX rp-pvt-vpc
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -72,6 +96,10 @@ steps:
     key: apply-destroy-pvt-vpc-no-zone
     command: .buildkite/scripts/apply.sh --TF_DIR examples/private-vpc-no-zone --PREFIX rp-pvt-nzone
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
@@ -82,6 +110,10 @@ steps:
     key: apply-destroy-pvt-vpc-connect
     command: .buildkite/scripts/apply.sh --TF_DIR examples/private-with-connect --PREFIX rp-pvt-cnct
     plugins:
+      - seek-oss/aws-sm#v2.3.2:
+          json-to-env:
+            - json-key: .
+              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
