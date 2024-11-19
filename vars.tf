@@ -199,6 +199,8 @@ variable "distro_ssh_user" {
     "Fedora-Cloud-Base-35" = "fedora"
     "Fedora-Cloud-Base-36" = "fedora"
     "Fedora-Cloud-Base-37" = "fedora"
+    "Fedora-Cloud-Base-39" = "fedora"
+    "Fedora-Cloud-Base-41" = "fedora"
     "ubuntu-bionic"        = "ubuntu"
     "ubuntu-focal"         = "ubuntu"
     "ubuntu-hirsute"       = "ubuntu"
