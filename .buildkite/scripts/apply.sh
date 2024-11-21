@@ -1,8 +1,4 @@
 #!/bin/bash
-
-export AWS_ACCESS_KEY_ID=$DA_AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY=$DA_AWS_SECRET_ACCESS_KEY
-
 mkdir -p ~/.ssh
 ssh-keygen -t rsa -b 4096 -C "test@redpanda.com" -N "" -f ~/.ssh/id_rsa <<< y && chmod 0700 ~/.ssh/id_rsa
 

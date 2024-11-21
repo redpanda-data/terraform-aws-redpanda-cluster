@@ -58,13 +58,13 @@ module "redpanda-cluster" {
   distro                 = var.distro
   hosts_file             = var.hosts_file
   tags                   = var.tags
-  subnets                = {
+  subnets = {
     broker = {
       "us-west-2a" = aws_subnet.server-a.id
       "us-west-2b" = aws_subnet.server-b.id
     }
   }
-  availability_zone        = ["us-west-2a", "us-west-2b"]
+  availability_zone = ["us-west-2a", "us-west-2b"]
   deployment_prefix        = var.deployment_prefix
   associate_public_ip_addr = true
   machine_architecture     = "arm64"
@@ -105,7 +105,7 @@ variable "allow_force_destroy" {
 
 variable "distro" {
   type    = string
-  default = "Fedora-Cloud-Base-36"
+  default = "Fedora-Cloud-Base-39"
 }
 
 variable "hosts_file" {
@@ -114,7 +114,7 @@ variable "hosts_file" {
 }
 
 variable "tags" {
-  type    = map(string)
+  type = map(string)
   default = {}
 }
 

@@ -9,12 +9,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy VPC Public
@@ -24,12 +24,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy VPC Public IS4
@@ -39,12 +39,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy Simple
@@ -54,12 +54,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy Tiered Storage
@@ -69,12 +69,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy Private VPC
@@ -84,12 +84,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
 
   - label: Terraform Apply and Destroy Private VPC No Zone
@@ -99,12 +99,12 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
   - label: Terraform Apply and Destroy Private VPC Connect
     key: apply-destroy-pvt-vpc-connect
@@ -113,10 +113,10 @@ steps:
       - seek-oss/aws-sm#v2.3.2:
           json-to-env:
             - json-key: .
-              secret-id: sdlc/prod/buildkite/devex_gcp_creds_base64
+              secret-id: sdlc/prod/buildkite/terraform_aws_redpanda_cluster
       - docker#v5.4.0:
           image: glrp/atgt:latest
           environment:
-            - DA_AWS_ACCESS_KEY_ID
-            - DA_AWS_SECRET_ACCESS_KEY
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
             - AWS_DEFAULT_REGION
