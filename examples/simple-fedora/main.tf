@@ -7,7 +7,8 @@ module "simple-example" {
   tags = {
     "owner" : "simple-test"
   }
-  distro = "Fedora-Cloud-Base-39"
+  distro     = "Fedora-Cloud-Base-39"
+  aws_region = var.region
 }
 
 terraform {
