@@ -5,7 +5,7 @@ resource "aws_security_group" "node_sec_group" {
   vpc_id      = var.vpc_id
 
   dynamic "ingress" {
-    for_each = {for name, details in var.ingress_rules : name => details if details.enabled}
+    for_each = { for name, details in var.ingress_rules : name => details if details.enabled }
     content {
       description     = ingress.value.description
       from_port       = ingress.value.from_port
@@ -17,7 +17,7 @@ resource "aws_security_group" "node_sec_group" {
     }
   }
   dynamic "egress" {
-    for_each = {for name, details in var.egress_rules : name => details if details.enabled}
+    for_each = { for name, details in var.egress_rules : name => details if details.enabled }
     content {
       description     = egress.value.description
       from_port       = egress.value.from_port

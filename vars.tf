@@ -45,7 +45,7 @@ variable "enable_connect" {
 variable "ec2_ebs_device_names" {
   type        = list(string)
   description = "Device names for EBS volumes"
-  default     = [
+  default = [
     "/dev/xvdba",
     "/dev/xvdbb",
     "/dev/xvdbc",
@@ -192,7 +192,7 @@ variable "public_key_path" {
 variable "distro_ssh_user" {
   description = "The default user used by the AWS AMIs"
   type        = map(string)
-  default     = {
+  default = {
     "debian-10"            = "admin"
     "debian-11"            = "admin"
     "Fedora-Cloud-Base-34" = "fedora"
@@ -208,7 +208,7 @@ variable "distro_ssh_user" {
     "ubuntu-kinetic"       = "ubuntu"
     "RHEL-8"               = "ec2-user"
     #"RHEL-9"              = "ec2-user"
-    "amzn2"                = "ec2-user"
+    "amzn2" = "ec2-user"
   }
 }
 
@@ -278,7 +278,7 @@ variable "associate_public_ip_addr" {
 
 variable "ingress_rules" {
   description = "Map of ingress rules to create on the node sec group. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
-  type        = map(object({
+  type = map(object({
     description     = string
     from_port       = number
     to_port         = number
@@ -434,7 +434,7 @@ variable "ingress_rules" {
 
 variable "egress_rules" {
   description = "Map of egress rules to create. if you are using more than one security group it is probably a good idea to create your own properly specified SGs rather than using this field"
-  type        = map(object({
+  type = map(object({
     description     = string
     from_port       = number
     to_port         = number
@@ -485,7 +485,7 @@ variable "associate_public_ip_addr_client" {
 variable "subnets" {
   description = "Map of instance types to AZs to subnet IDs. Broker is the default so if you intend to use the same subnet for broker, client and monitor you can just specify broker. However node counts are also taken into account so even if the maps are merged. If you set for example: client to 0 but have specified broker in 6 subnets you will end up with a client map with 6 entries but 0 built clients"
   type        = map(map(string))
-  default     = {
+  default = {
     broker     = {}
     client     = {}
     prometheus = {}

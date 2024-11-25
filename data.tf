@@ -9,32 +9,34 @@ data "aws_arn" "caller_arn" {
 
 data "aws_ami" "ami" {
   most_recent = true
-
   filter {
-    name   = "name"
+    name = "name"
     values = [
       "ubuntu/images/hvm-ssd/ubuntu-*-amd64-server-*",
       "ubuntu/images/hvm-ssd/ubuntu-*-arm64-server-*",
-      "Fedora-Cloud-Base-*.x86_64-hvm-us-west-2-gp2-0",
-      "Fedora-Cloud-Base-*.aarch64-hvm-us-west-2-gp2-0",
-      "Fedora-Cloud-Base-*.aarch64-hvm-us-west-2-standard",
+      "Fedora-Cloud-Base-*.x86_64-hvm-${var.aws_region}-gp2-0",
+      "Fedora-Cloud-Base-*.aarch64-hvm-${var.aws_region}-gp2-0",
+      "Fedora-Cloud-Base-*.aarch64-hvm-${var.aws_region}-standard",
+      "Fedora-Cloud-Base-*.x86_64-hvm-${var.aws_region}-gp3-0",
+      "Fedora-Cloud-Base-*.aarch64-hvm-${var.aws_region}-gp3-0",
+      "Fedora-Cloud-Base-*.aarch64-hvm-${var.aws_region}-standard",
       "debian-*-amd64-*",
       "debian-*-hvm-x86_64-gp2-*'",
       "amzn2-ami-hvm-2.0.*-x86_64-gp2",
-      "RHEL*HVM-*-x86_64*Hourly2-GP2"
+      "RHEL*HVM-*-x86_64*Hourly2-GP2",
+      "debian-*-hvm-x86_64-gp3-*'",
+      "amzn2-ami-hvm-2.0.*-x86_64-gp3",
+      "RHEL*HVM-*-x86_64*Hourly2-GP3"
     ]
   }
-
   filter {
     name   = "architecture"
     values = [var.machine_architecture]
   }
-
   filter {
     name   = "name"
     values = ["*${var.distro}*"]
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]

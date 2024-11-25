@@ -12,11 +12,11 @@ resource "aws_iam_instance_profile" "redpanda" {
 }
 
 resource "aws_iam_policy" "redpanda" {
-  count  = var.tiered_storage_enabled ? 1 : 0
-  name   = local.deployment_id
-  path   = "/"
+  count = var.tiered_storage_enabled ? 1 : 0
+  name  = local.deployment_id
+  path  = "/"
   policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
         "Effect" : "Allow",
@@ -34,15 +34,15 @@ resource "aws_iam_policy" "redpanda" {
 }
 
 resource "aws_iam_role" "redpanda" {
-  count              = var.tiered_storage_enabled ? 1 : 0
-  name               = local.deployment_id
+  count = var.tiered_storage_enabled ? 1 : 0
+  name  = local.deployment_id
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
         Principal = {
           Service = "ec2.amazonaws.com"
         }

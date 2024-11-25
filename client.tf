@@ -1,5 +1,5 @@
 resource "aws_instance" "client" {
-  count                       = var.client_count  * length(var.availability_zone)
+  count                       = var.client_count * length(var.availability_zone)
   ami                         = coalesce(var.client_ami, data.aws_ami.ami.image_id)
   instance_type               = var.client_instance_type
   key_name                    = aws_key_pair.ssh.key_name
