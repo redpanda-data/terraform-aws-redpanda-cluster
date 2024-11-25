@@ -30,15 +30,15 @@ data "aws_ami" "ami" {
     ]
   }
   filter {
-    name = "architecture"
+    name   = "architecture"
     values = [var.machine_architecture]
   }
   filter {
-    name = "name"
+    name   = "name"
     values = ["*${var.distro}*"]
   }
   filter {
-    name = "virtualization-type"
+    name   = "virtualization-type"
     values = ["hvm"]
   }
 
