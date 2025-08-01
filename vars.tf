@@ -208,7 +208,8 @@ variable "distro_ssh_user" {
     "ubuntu-kinetic"       = "ubuntu"
     "RHEL-8"               = "ec2-user"
     "RHEL-9"               = "ec2-user"
-    "amzn2" = "ec2-user"
+    "amzn2"                = "ec2-user"
+    "al2023"               = "ec2-user"
   }
 }
 
