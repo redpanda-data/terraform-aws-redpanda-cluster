@@ -21,7 +21,6 @@ data "aws_ami" "ami" {
       "Fedora-Cloud-Base-*.x86_64-hvm-${var.aws_region}-standard",
       "Fedora-Cloud-Base-*.aarch64-hvm-${var.aws_region}-standard",
       "debian-*-amd64-*",
-      "debian-*-hvm-x86_64-gp2-*",
       "amzn2-ami-hvm-2.0.*-x86_64-gp2",
       "RHEL*HVM-*-x86_64*Hourly2-GP2",
       "debian-*-hvm-x86_64-gp3-*",
