@@ -206,7 +206,7 @@ variable "distro_ssh_user" {
     "ubuntu-hirsute"       = "ubuntu"
     "ubuntu-jammy"         = "ubuntu"
     "ubuntu-kinetic"       = "ubuntu"
-    "ubuntu-noble  "       = "ubuntu"
+    "ubuntu-noble"       = "ubuntu"
     "RHEL-8"               = "ec2-user"
     "RHEL-9"               = "ec2-user"
     "amzn2"                = "ec2-user"
