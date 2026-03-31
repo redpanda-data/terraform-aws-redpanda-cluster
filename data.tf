@@ -12,8 +12,8 @@ data "aws_ami" "ami" {
   filter {
     name = "name"
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-*-amd64-server-*",
-      "ubuntu/images/hvm-ssd/ubuntu-*-arm64-server-*",
+      "ubuntu/images/hvm-ssd*/ubuntu-*-amd64-server-*",
+      "ubuntu/images/hvm-ssd*/ubuntu-*-arm64-server-*",
       "Fedora-Cloud-Base-AmazonEC2.x86_64-*",
       "Fedora-Cloud-Base-AmazonEC2.aarch64-*",
       "Fedora-Cloud-Base-*.x86_64-hvm-${var.aws_region}-gp2-0",
