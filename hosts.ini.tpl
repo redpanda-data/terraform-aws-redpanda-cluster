@@ -1,6 +1,6 @@
 [redpanda]
 %{ for i, ip in broker_public_ips ~}
-${ ip != "" ? ip : broker_private_ips[i] } ansible_user=${ ssh_user } ansible_become=True private_ip=${broker_private_ips[i]}%{ if rack_awareness } rack=${rack[i]}%{ endif }%{ if tiered_storage_enabled } tiered_storage_bucket_name=${tiered_storage_bucket_name} cloud_storage_region=${cloud_storage_region}%{ endif }
+${ ip != "" ? ip : broker_private_ips[i] } ansible_user=${ ssh_user } ansible_become=True private_ip=${broker_private_ips[i]}%{ if rack_awareness } rack=${rack[i]}%{ endif }%{ if tiered_storage_enabled } tiered_storage_bucket_name=${tiered_storage_bucket_name} cloud_storage_region=${cloud_storage_region} cloud_storage_credentials_source="aws_instance_metadata"%{ endif }
 %{ endfor ~}
 %{ if enable_monitoring }
 
